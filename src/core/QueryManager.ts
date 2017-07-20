@@ -943,7 +943,7 @@ export class QueryManager {
 
     this.queryStore.reset(Object.keys(this.observableQueries));
     this.mutationStore.reset();
-    this.dataStore.reset();
+    const dataStoreReset = this.dataStore.reset();
 
     if (QueryManager.EMIT_REDUX_ACTIONS) {
       this.store.dispatch({
@@ -974,7 +974,7 @@ export class QueryManager {
 
     this.broadcastQueries();
 
-    return Promise.all(observableQueryPromises);
+    return dataStoreReset.then(() => Promise.all(observableQueryPromises));
   }
 
   public startQuery<T>(

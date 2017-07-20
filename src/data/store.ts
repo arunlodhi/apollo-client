@@ -284,8 +284,8 @@ export class DataStore {
     });
   }
 
-  public reset() {
-    this.cache.reset();
+  public reset(): Promise<void> {
+    return this.cache.reset();
   }
 
   public executeWrites(writes: DataWrite[]) {
