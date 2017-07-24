@@ -7,45 +7,45 @@ export type CacheWrite = {
   variables?: Object;
 };
 
-export interface Cache {
-  reset(): Promise<void>;
+export abstract class Cache {
+  public abstract reset(): Promise<void>;
 
-  diffQuery(query: {
-    document: DocumentNode;
+  public abstract diffQuery(query: {
+    query: DocumentNode;
     variables: any;
     returnPartialData?: boolean;
     previousResult?: any;
   }): any;
 
-  diffQueryOptimistic(query: {
-    document: DocumentNode;
+  public abstract diffQueryOptimistic(query: {
+    query: DocumentNode;
     variables: any;
     returnPartialData?: boolean;
     previousResult?: any;
   }): any;
 
-  readQuery(query: {
-    document: DocumentNode;
+  public abstract readQuery(query: {
+    query: DocumentNode;
     variables: any;
     rootId?: string;
     previousResult?: any;
     nullIfIdNotFound?: boolean;
   }): any;
 
-  readQueryOptimistic(query: {
-    document: DocumentNode;
+  public abstract readQueryOptimistic(query: {
+    query: DocumentNode;
     variables: any;
     rootId?: string;
     previousResult?: any;
     nullIfIdNotFound?: boolean;
   }): any;
 
-  writeResult(write: CacheWrite): void;
+  public abstract writeResult(write: CacheWrite): void;
 
-  removeOptimistic(id: string): void;
+  public abstract removeOptimistic(id: string): void;
 
-  performTransaction(transaction: (c: Cache) => void): void;
-  performOptimisticTransaction(
+  public abstract performTransaction(transaction: (c: Cache) => void): void;
+  public abstract performOptimisticTransaction(
     transaction: (c: Cache) => void,
     id: string,
   ): void;

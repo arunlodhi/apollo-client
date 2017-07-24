@@ -20,13 +20,14 @@ export type OptimisticStoreItem = {
   transaction: (c: Cache) => void;
 };
 
-export class InMemoryCache implements Cache {
+export class InMemoryCache extends Cache {
   private data: NormalizedCache;
   private config: ApolloReducerConfig;
   private nextOptimisticId = 0;
   private optimistic: OptimisticStoreItem[] = [];
 
   constructor(config: ApolloReducerConfig, initialStore: NormalizedCache = {}) {
+    super();
     this.config = config;
     this.data = initialStore;
   }
@@ -61,14 +62,14 @@ export class InMemoryCache implements Cache {
   }
 
   public diffQuery(query: {
-    document: DocumentNode;
+    query: DocumentNode;
     variables: any;
     returnPartialData?: boolean;
     previousResult?: any;
   }): DiffResult {
     return diffQueryAgainstStore({
       store: this.data,
-      query: query.document,
+      query: query.query,
       variables: query.variables,
       returnPartialData: query.returnPartialData,
       previousResult: query.previousResult,
@@ -78,14 +79,14 @@ export class InMemoryCache implements Cache {
   }
 
   public diffQueryOptimistic(query: {
-    document: DocumentNode;
+    query: DocumentNode;
     variables: any;
     returnPartialData?: boolean;
     previousResult?: any;
   }): DiffResult {
     return diffQueryAgainstStore({
       store: this.getOptimisticData(),
-      query: query.document,
+      query: query.query,
       variables: query.variables,
       returnPartialData: query.returnPartialData,
       previousResult: query.previousResult,
@@ -95,7 +96,7 @@ export class InMemoryCache implements Cache {
   }
 
   public readQuery(query: {
-    document: DocumentNode;
+    query: DocumentNode;
     variables: any;
     rootId?: string;
     previousResult?: any;
@@ -111,7 +112,7 @@ export class InMemoryCache implements Cache {
 
     return readQueryFromStore({
       store: this.data,
-      query: query.document,
+      query: query.query,
       variables: query.variables,
       rootId: query.rootId,
       fragmentMatcherFunction: this.config.fragmentMatcher,
@@ -121,7 +122,7 @@ export class InMemoryCache implements Cache {
   }
 
   public readQueryOptimistic(query: {
-    document: DocumentNode;
+    query: DocumentNode;
     variables: any;
     rootId?: string;
     previousResult?: any;
@@ -139,7 +140,7 @@ export class InMemoryCache implements Cache {
 
     return readQueryFromStore({
       store: data,
-      query: query.document,
+      query: query.query,
       variables: query.variables,
       rootId: query.rootId,
       fragmentMatcherFunction: this.config.fragmentMatcher,

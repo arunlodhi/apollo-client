@@ -27,8 +27,7 @@ describe('ReduxDataProxy', () => {
       initialState ? initialState.apollo.data : {},
     );
 
-    const fm = new HeuristicFragmentMatcher();
-    return new CacheDataProxy(cache, fm, config || {});
+    return new CacheDataProxy(cache, config || {});
   }
 
   describe('readQuery', () => {

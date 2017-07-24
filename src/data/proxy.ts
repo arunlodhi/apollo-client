@@ -10,7 +10,6 @@ import {
 } from '../queries/getFromAST';
 import { readQueryFromStore } from './readFromStore';
 import { writeResultToStore } from './writeToStore';
-import { FragmentMatcherInterface } from './fragmentMatcher';
 import { addTypenameToDocument } from '../queries/queryTransform';
 import { QueryManager } from '../core/QueryManager';
 import { Cache } from './cache';
@@ -158,17 +157,13 @@ export class CacheDataProxy implements DataProxy {
 
   private reducerConfig: ApolloReducerConfig;
 
-  private fragmentMatcher: FragmentMatcherInterface;
-
   constructor(
     cache: Cache,
-    fragmentMatcher: FragmentMatcherInterface,
     reducerConfig: ApolloReducerConfig,
     reduxStore?: ApolloStore,
   ) {
     this.cache = cache;
     this.reducerConfig = reducerConfig;
-    this.fragmentMatcher = fragmentMatcher;
 
     if (reduxStore) {
       this.reduxStore = reduxStore;
@@ -188,7 +183,7 @@ export class CacheDataProxy implements DataProxy {
 
     return this.cache.readQueryOptimistic({
       rootId: 'ROOT_QUERY',
-      document: query,
+      query,
       variables,
     });
   }
@@ -211,7 +206,7 @@ export class CacheDataProxy implements DataProxy {
     // just return `null`.
     return this.cache.readQueryOptimistic({
       rootId: id,
-      document: query,
+      query,
       variables,
       nullIfIdNotFound: true,
     });
@@ -357,7 +352,7 @@ export class TransactionDataProxy implements DataProxy {
 
     return this.cache.readQuery({
       rootId: 'ROOT_QUERY',
-      document: query,
+      query,
       variables,
     });
   }
@@ -390,7 +385,7 @@ export class TransactionDataProxy implements DataProxy {
     // If we could not find an item in the store with the provided id then we
     return this.cache.readQuery({
       rootId: id,
-      document: query,
+      query,
       variables,
       nullIfIdNotFound: true,
     });

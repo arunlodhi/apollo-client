@@ -191,7 +191,7 @@ export class DataStore {
               result: currentQueryResult,
               isMissing,
             } = this.cache.diffQuery({
-              document: query.document,
+              query: query.document,
               variables: query.variables,
               returnPartialData: true,
             });
@@ -236,8 +236,6 @@ export class DataStore {
           const proxy = new TransactionDataProxy(c, this.config);
 
           tryFunctionOrLogError(() => update(proxy, mutation.result));
-          const writes = proxy.finish();
-          this.executeWrites(writes);
         });
       }
 

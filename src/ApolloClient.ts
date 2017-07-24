@@ -591,7 +591,6 @@ export default class ApolloClient implements DataProxy {
       this.initStore();
       this.proxy = new CacheDataProxy(
         this.queryManager.dataStore.getCache(),
-        this.fragmentMatcher,
         this.reducerConfig,
         this.store,
       );

@@ -441,7 +441,7 @@ export class QueryManager {
     // TODO we hit the cache even if the policy is network-first. This could be unnecessary if the network is up.
     if (fetchType !== FetchType.refetch && fetchPolicy !== 'network-only') {
       const { isMissing, result } = this.dataStore.getCache().diffQuery({
-        document: queryDoc,
+        query: queryDoc,
         variables,
         returnPartialData: true,
       });
@@ -652,7 +652,7 @@ export class QueryManager {
               result: data,
               isMissing,
             } = this.dataStore.getCache().diffQueryOptimistic({
-              document: this.queryDocuments[queryId],
+              query: this.queryDocuments[queryId],
               variables:
                 queryStoreValue.previousVariables || queryStoreValue.variables,
               previousResult: lastResult && lastResult.data,
@@ -1113,12 +1113,12 @@ export class QueryManager {
       // const data = ;
       const data = isOptimistic
         ? this.dataStore.getCache().readQueryOptimistic({
-            document,
+            query: document,
             variables,
             previousResult: lastResult ? lastResult.data : undefined,
           })
         : this.dataStore.getCache().readQuery({
-            document,
+            query: document,
             variables,
             previousResult: lastResult ? lastResult.data : undefined,
           });
@@ -1326,7 +1326,7 @@ export class QueryManager {
               // the results if returnPartialData is false.
               resultFromStore = this.dataStore.getCache().readQuery({
                 variables,
-                document,
+                query: document,
               });
               // ensure multiple errors don't get thrown
               /* tslint:disable */
