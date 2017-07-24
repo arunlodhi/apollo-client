@@ -3,7 +3,7 @@ import { createStore } from 'redux';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 import { createApolloStore, ApolloReducerConfig } from '../src/store';
-import { StoreDataProxy, TransactionDataProxy } from '../src/data/proxy';
+import { CacheDataProxy, TransactionDataProxy } from '../src/data/proxy';
 import { toIdValue } from '../src/data/storeUtils';
 import { HeuristicFragmentMatcher } from '../src/data/fragmentMatcher';
 import { addTypenameToDocument } from '../src/queries/queryTransform';
@@ -22,16 +22,13 @@ describe('ReduxDataProxy', () => {
       config?: ApolloReducerConfig;
     } = {},
   ) {
-    const dataStore = new DataStore(
+    const cache = new InMemoryCache(
       config || {},
-      new InMemoryCache(
-        config || {},
-        initialState ? initialState.apollo.data : {},
-      ),
+      initialState ? initialState.apollo.data : {},
     );
 
     const fm = new HeuristicFragmentMatcher();
-    return new StoreDataProxy(dataStore, fm, config || {});
+    return new CacheDataProxy(cache, fm, config || {});
   }
 
   describe('readQuery', () => {
@@ -619,7 +616,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         ROOT_QUERY: {
           a: 1,
         },
@@ -635,7 +632,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         ROOT_QUERY: {
           a: 1,
           b: 2,
@@ -654,7 +651,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         ROOT_QUERY: {
           a: 4,
           b: 5,
@@ -678,7 +675,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         ROOT_QUERY: {
           a: 1,
           d: {
@@ -706,7 +703,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         ROOT_QUERY: {
           a: 1,
           d: {
@@ -754,7 +751,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         ROOT_QUERY: {
           a: 1,
           b: 2,
@@ -803,7 +800,7 @@ describe('ReduxDataProxy', () => {
         },
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         ROOT_QUERY: {
           'field({"literal":true,"value":42})': 1,
           'field({"literal":false,"value":42})': 2,
@@ -899,7 +896,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         foo: {
           e: 4,
           h: {
@@ -927,7 +924,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         foo: {
           e: 4,
           f: 5,
@@ -955,7 +952,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         foo: {
           e: 4,
           f: 5,
@@ -984,7 +981,7 @@ describe('ReduxDataProxy', () => {
         `,
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         foo: {
           e: 4,
           f: 5,
@@ -1032,7 +1029,7 @@ describe('ReduxDataProxy', () => {
         fragmentName: 'fooFragment',
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         foo: {
           e: 4,
           f: 5,
@@ -1074,7 +1071,7 @@ describe('ReduxDataProxy', () => {
         fragmentName: 'barFragment',
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         foo: {
           e: 4,
           f: 5,
@@ -1114,7 +1111,7 @@ describe('ReduxDataProxy', () => {
         },
       });
 
-      assert.deepEqual((proxy as any).store.getCache().getData(), {
+      assert.deepEqual((proxy as any).cache.getData(), {
         foo: {
           'field({"literal":true,"value":42})': 1,
           'field({"literal":false,"value":42})': 2,

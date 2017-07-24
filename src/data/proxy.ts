@@ -145,14 +145,14 @@ export interface DataProxy {
 }
 
 /**
- * A data proxy powered by our internal implementation of the data store,
+ * A data proxy powered by our internal implementation of the data cache,
  * which tracks the normalized cache and optimistic query status.
  */
-export class StoreDataProxy implements DataProxy {
+export class CacheDataProxy implements DataProxy {
   /**
-   * The internal store containing the normalized cache and optimistic results state.
+   * Te cache containing the normalized cache and optimistic results state.
    */
-  private store: DataStore;
+  private cache: Cache;
 
   private reduxStore: ApolloStore;
 
@@ -161,12 +161,12 @@ export class StoreDataProxy implements DataProxy {
   private fragmentMatcher: FragmentMatcherInterface;
 
   constructor(
-    store: DataStore,
+    cache: Cache,
     fragmentMatcher: FragmentMatcherInterface,
     reducerConfig: ApolloReducerConfig,
     reduxStore?: ApolloStore,
   ) {
-    this.store = store;
+    this.cache = cache;
     this.reducerConfig = reducerConfig;
     this.fragmentMatcher = fragmentMatcher;
 
@@ -186,7 +186,7 @@ export class StoreDataProxy implements DataProxy {
       query = addTypenameToDocument(query);
     }
 
-    return this.store.getCache().readQueryOptimistic({
+    return this.cache.readQueryOptimistic({
       rootId: 'ROOT_QUERY',
       document: query,
       variables,
@@ -209,7 +209,7 @@ export class StoreDataProxy implements DataProxy {
 
     // If we could not find an item in the store with the provided id then we
     // just return `null`.
-    return this.store.getCache().readQueryOptimistic({
+    return this.cache.readQueryOptimistic({
       rootId: id,
       document: query,
       variables,
@@ -244,15 +244,12 @@ export class StoreDataProxy implements DataProxy {
       });
     }
 
-    this.store.executeWrites([
-      {
-        rootId: 'ROOT_QUERY',
-        result: data,
-        document: query,
-        operationName: getOperationName(query),
-        variables: variables || {},
-      },
-    ]);
+    this.cache.writeResult({
+      dataId: 'ROOT_QUERY',
+      result: data,
+      document: query,
+      variables: variables || {},
+    });
   }
 
   /**
@@ -286,15 +283,12 @@ export class StoreDataProxy implements DataProxy {
       });
     }
 
-    this.store.executeWrites([
-      {
-        rootId: id,
-        result: data,
-        document,
-        operationName: getOperationName(document),
-        variables: variables || {},
-      },
-    ]);
+    this.cache.writeResult({
+      dataId: id,
+      result: data,
+      document,
+      variables: variables || {},
+    });
   }
 }
 
